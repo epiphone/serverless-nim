@@ -1,0 +1,36 @@
+{
+  "name": "@epiphone/serverless-nim",
+  "version": "0.0.1",
+  "description": "A serverless framework plugin for Nim",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/epiphone/serverless-nim.git"
+  },
+  "keywords": [
+    "serverless",
+    "nim",
+    "serverless-framework",
+    "aws-lambda"
+  ],
+  "author": "Aleksi Pekkala <aleksipekkala@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/epiphone/serverless-nim/issues"
+  },
+  "homepage": "https://github.com/epiphone/serverless-nim#readme",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "dependencies": {
+    "serverless": "^1.61.1"
+  },
+  "devDependencies": {
+    "prettier": "^1.19.1",
+    "standard": "^14.3.1"
+  }
+}
