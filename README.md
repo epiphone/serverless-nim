@@ -1,4 +1,5 @@
 # Serverless Nim plugin
+[![npm version](https://badge.fury.io/js/%40epiphone%2Fserverless-nim.svg)](https://badge.fury.io/js/%40epiphone%2Fserverless-nim)
 
 Easier builds/packaging for Nim Lambda functions on the AWS `provided` runtime.
 
