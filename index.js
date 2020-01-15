@@ -21,7 +21,7 @@ class ServerlessPlugin {
 
     this.custom = {
       flags: ['-d:release'],
-      dockerFlags: '',
+      dockerFlags: [],
       dockerTag: 'nimlang/nim',
       useDocker: false,
       ...((this.serverless.service.custom || {}).nim || {})
@@ -89,9 +89,12 @@ class ServerlessPlugin {
       path.extname(func.handler) ? func.handler : func.handler + '.nim'
     )
     const binaryPath = path.join(config.servicePath, 'bootstrap')
-    const nimFlags = (func.nim || {}).flags || this.custom.flags
+    const { dockerFlags, dockerTag, flags, useDocker } = {
+      ...this.custom,
+      ...func.nim
+    }
 
-    const { status } = this.custom.useDocker
+    const { status } = useDocker
       ? spawnSync(
           'docker',
           [
@@ -101,17 +104,17 @@ class ServerlessPlugin {
             `${config.servicePath}:/app`,
             '-w',
             '/app',
-            ...this.custom.dockerFlags,
-            this.custom.dockerTag,
+            ...dockerFlags,
+            dockerTag,
             'sh',
             '-c',
-            `nimble c ${nimFlags.join(' ')} -y -o:bootstrap ${func.handler}`
+            `nimble c ${flags.join(' ')} -y -o:bootstrap ${func.handler}`
           ],
           IGNORE_OUTPUT
         )
       : spawnSync(
           'nimble',
-          ['c', ...nimFlags, '-y', `-o:${binaryPath}`, srcPath],
+          ['c', ...flags, '-y', `-o:${binaryPath}`, srcPath],
           IGNORE_OUTPUT
         )
 
