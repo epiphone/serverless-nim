@@ -8,7 +8,7 @@ TODO
 
 Easiest way to get started is to use the template: TODO
 
-Or clone example project at https://github.com/epiphone/nim-serverless-sample.
+Or clone example project at https://github.com/epiphone/serverless-nim-sample.
 
 ## Usage
 
