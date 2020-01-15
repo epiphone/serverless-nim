@@ -4,6 +4,7 @@ const { spawnSync } = require('child_process')
 const path = require('path')
 const PackagePlugin = require('serverless/lib/plugins/package/package')
 
+const IGNORE_OUTPUT = { stdio: ['ignore', process.stdout, process.stderr] }
 const NIM_RUNTIME = 'nim'
 const PROVIDED_RUNTIME = 'provided'
 
@@ -19,7 +20,10 @@ class ServerlessPlugin {
     }
 
     this.custom = {
-      flags: '-d:release',
+      flags: ['-d:release'],
+      dockerFlags: '',
+      dockerTag: 'nimlang/nim',
+      useDocker: false,
       ...((this.serverless.service.custom || {}).nim || {})
     }
   }
@@ -48,32 +52,23 @@ class ServerlessPlugin {
     }
 
     for (const funcName of functionNames) {
-      const func = service.getFunction(funcName)
-      const srcPath = path.join(
-        config.servicePath,
-        path.extname(func.handler) ? func.handler : func.handler + '.nim'
-      )
-      const binaryPath = path.join(config.servicePath, 'bootstrap')
-
       this.serverless.cli.log(
         `Building and packaging Nim function ${funcName}...`
       )
 
-      const nimFlags = (func.nim || {}).flags || this.custom.flags
-      const { status } = spawnSync(
-        'nimble',
-        ['c', nimFlags, `-o:${binaryPath}`, srcPath],
-        { stdio: ['ignore', process.stdout, process.stderr] } // Make compilation output visible
-      )
+      const func = service.getFunction(funcName)
 
-      if (status !== 0) {
-        throw new Error('Compiling Nim function failed - check output above')
-      }
+      this.compileFunction(func)
 
       func.package = func.package || {}
       func.package.exclude = ['**/*']
       func.package.include = (func.package.include || []).concat('bootstrap')
-      func.package.artifact = await packagePlugin.packageFunction(funcName)
+
+      const artifactPath = await packagePlugin.packageFunction(funcName)
+      func.package.artifact = path.join(
+        '.serverless',
+        path.basename(artifactPath)
+      )
 
       // Ensure runtime is set to a sane value for other plugins:
       if (func.runtime === NIM_RUNTIME) {
@@ -83,6 +78,45 @@ class ServerlessPlugin {
 
     if (service.provider.runtime === NIM_RUNTIME) {
       service.provider.runtime = PROVIDED_RUNTIME
+    }
+  }
+
+  compileFunction(func) {
+    const { config } = this.serverless
+
+    const srcPath = path.join(
+      config.servicePath,
+      path.extname(func.handler) ? func.handler : func.handler + '.nim'
+    )
+    const binaryPath = path.join(config.servicePath, 'bootstrap')
+    const nimFlags = (func.nim || {}).flags || this.custom.flags
+
+    const { status } = this.custom.useDocker
+      ? spawnSync(
+          'docker',
+          [
+            'run',
+            '--rm',
+            '-v',
+            `${config.servicePath}:/app`,
+            '-w',
+            '/app',
+            ...this.custom.dockerFlags,
+            this.custom.dockerTag,
+            'sh',
+            '-c',
+            `nimble c ${nimFlags.join(' ')} -y -o:bootstrap ${func.handler}`
+          ],
+          IGNORE_OUTPUT
+        )
+      : spawnSync(
+          'nimble',
+          ['c', ...nimFlags, '-y', `-o:${binaryPath}`, srcPath],
+          IGNORE_OUTPUT
+        )
+
+    if (status !== 0) {
+      throw new Error('Compiling Nim function failed - check output above')
     }
   }
 
