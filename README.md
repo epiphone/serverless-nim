@@ -23,7 +23,13 @@ Alternatively try cloning the sample project from https://github.com/epiphone/se
 
 ### Manual setup
 
-First install the NPM dependency with `yarn add @epiphone/serverless-nim` and then include the following configuration in `serverless.yml`:
+First install the NPM dependency with
+
+```bash
+yarn add @epiphone/serverless-nim
+```
+
+and then include the following configuration in  `serverless.yml`:
 
 ```yaml
 provider:
