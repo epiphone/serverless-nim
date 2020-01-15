@@ -1,6 +1,6 @@
 {
   "name": "@epiphone/serverless-nim",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A serverless framework plugin for Nim",
   "main": "index.js",
   "scripts": {
