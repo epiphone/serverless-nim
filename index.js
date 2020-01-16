@@ -16,7 +16,8 @@ class ServerlessPlugin {
     this.hooks = {
       'before:package:createDeploymentArtifacts': this.build.bind(this),
       'after:package:createDeploymentArtifacts': this.cleanup.bind(this),
-      'before:deploy:function:packageFunction': this.build.bind(this)
+      'before:deploy:function:packageFunction': this.build.bind(this),
+      'after:deploy:function:packageFunction': this.cleanup.bind(this)
     }
 
     this.custom = {
