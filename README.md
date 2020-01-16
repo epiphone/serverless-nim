@@ -14,10 +14,16 @@ Check the **sample project** at https://github.com/epiphone/serverless-nim-sampl
 
 ### Template
 
-~~The easiest way to get started is via the template:~~ **TODO**
+The easiest way to get started is via [the template](https://github.com/epiphone/serverless-nim-template):
 
 ```bash
-serverless create --template-url https://github.com/epiphone/serverless-nim-template
+serverless create --template-url https://github.com/epiphone/serverless-nim-template --path my-service-path --name my-service
+
+cd my-service-path
+
+yarn install # or npm install
+
+serverless deploy
 ```
 
 Alternatively try cloning the sample project from https://github.com/epiphone/serverless-nim-sample.
