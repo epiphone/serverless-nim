@@ -128,3 +128,9 @@ functions:
 ```
 
 The Nim binary gets automatically included in the package.
+
+### Optimize binary size
+
+Nim compiler already produces pretty compact binaries, but the output can be further minimized with the `--opt:size` compiler flag or with external tools like `strip` or `upx`. The easiest way to enable all these is to add [this `config.nims` Nimscript file](https://github.com/epiphone/serverless-nim-sample/blob/master/config.nims) to your service root directory. You'll also of course need to install the external tools, or if building in Docker make sure the Docker image contains the tools.
+
+Read more about optimizing binary size [here](https://scripter.co/nim-deploying-static-binaries/).
